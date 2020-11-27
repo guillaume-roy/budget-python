@@ -2,6 +2,9 @@ import sqlite3
 import os
 import datetime
 
+# DB_PATH = "db/budget.db"
+DB_PATH = "db/budget_dev.db"
+
 def check_migrations_table_exist(db):
     cursor = db.cursor()
     cursor.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='migrations'")
@@ -38,14 +41,14 @@ def execute_migration_file(path, db):
     print("Execution of " + path)
     file = open("migrations/" + path, "r")
     cursor = db.cursor()
-    cursor.execute(file.read())
+    cursor.executescript(file.read())
     cursor.execute("INSERT INTO migrations (name, date) VALUES(?, ?);",(str(path), str(datetime.datetime.now()),))
     db.commit()
     cursor.close()
 
 ##########################
 
-db = sqlite3.connect("db/budget.db")
+db = sqlite3.connect(DB_PATH)
 
 check_migrations_table_exist(db)
 
