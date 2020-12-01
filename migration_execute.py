@@ -2,8 +2,8 @@ import sqlite3
 import os
 import datetime
 
-# DB_PATH = "db/budget.db"
-DB_PATH = "db/budget_dev.db"
+DB_PATH = "db/budget.db"
+# DB_PATH = "db/budget_dev.db"
 
 def check_migrations_table_exist(db):
     cursor = db.cursor()

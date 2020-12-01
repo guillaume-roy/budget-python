@@ -5,8 +5,8 @@ import hashlib
 import sqlite3
 import os
 
-# DB_PATH = "db/budget.db"
-DB_PATH = "db/budget_dev.db"
+DB_PATH = "db/budget.db"
+# DB_PATH = "db/budget_dev.db"
 
 def get_transactions(filename):
     wb = load_workbook(filename = filename, read_only=True)
