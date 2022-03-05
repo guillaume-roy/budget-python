@@ -1,9 +1,11 @@
 import sqlite3
 import os
 import datetime
+from dotenv import load_dotenv
 
-DB_PATH = "db/budget.db"
-# DB_PATH = "db/budget_dev.db"
+load_dotenv()
+
+DB_PATH = os.getenv("DB_NAME")
 
 def check_migrations_table_exist(db):
     cursor = db.cursor()
@@ -48,6 +50,8 @@ def execute_migration_file(path, db):
 
 ##########################
 
+print("\r\n##### EXECUTING MIGRATIONS #####\r\n")
+
 db = sqlite3.connect(DB_PATH)
 
 check_migrations_table_exist(db)
@@ -58,4 +62,4 @@ for migration in migrations:
     execute_migration_file(migration, db)
 
 db.close()
-print("Finished")
+print("\r\n##### MIGRATION EXECUTED #####\r\n")

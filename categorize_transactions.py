@@ -1,13 +1,16 @@
 import re
 import sqlite3
+import os
+from dotenv import load_dotenv
 
-DB_PATH = "db/budget.db"
-# DB_PATH = "db/budget_dev.db"
+load_dotenv()
+
+DB_PATH = os.getenv("DB_NAME")
 
 def get_transactions(db):
     cursor = db.cursor()
     cursor.execute("""
-        SELECT *
+        SELECT id, label
         FROM transactions
         WHERE category_id IS NULL
         """)
@@ -18,7 +21,7 @@ def get_transactions(db):
 def get_category_patterns(db):
     cursor = db.cursor()
     cursor.execute("""
-        SELECT *
+        SELECT pattern, category_id
         FROM category_patterns
         """)
     patterns = cursor.fetchall()
@@ -29,14 +32,16 @@ def match_categories(transactions, patterns, db):
     cursor = db.cursor()
     for transaction in transactions:
         for pattern in patterns:
-            match = re.search(str(pattern[1]), str(transaction[4]))
+            match = re.search(str(pattern[0]), str(transaction[1]))
             if match != None:
-                cursor.execute("UPDATE transactions SET category_id=? WHERE id=?",(pattern[2],transaction[0],))
+                cursor.execute("UPDATE transactions SET category_id=? WHERE id=?",(pattern[1],transaction[0],))
     db.commit()
     cursor.close()
                 
 
 #######################
+
+print("\r\n##### CATEGORIZING TRANSACTIONS #####\r\n")
 
 db = sqlite3.connect(DB_PATH)
 
@@ -46,4 +51,4 @@ match_categories(transactions, patterns, db)
 
 db.close()
 
-print("Finished")
+print("\r\n##### TRANSACTIONS CATEGORIZED #####\r\n")
