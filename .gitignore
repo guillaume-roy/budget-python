@@ -1,3 +1,6 @@
 db/
 imports/
 .env
+.venv
+
+__pycache__

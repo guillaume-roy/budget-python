@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h1>Categories</h1>
+
+<form method="post">
+  <input type="text" name="label" placeholder="label">
+  <input type="submit" value="Create">
+</form>
+
+<ul>
+  {% for category in categories %}
+  <li>{{ category[0] }} - {{ category[1] }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}
