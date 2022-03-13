@@ -7,48 +7,47 @@ load_dotenv()
 
 DB_PATH = os.getenv("DB_NAME")
 
-def get_transactions(db):
+def get_transactions():
+    db = sqlite3.connect(DB_PATH)
     cursor = db.cursor()
     cursor.execute("""
         SELECT id, label
         FROM transactions
-        WHERE category_id IS NULL
+        WHERE category_pattern_id IS NULL
         """)
     transactions = cursor.fetchall()
     cursor.close()
+    db.close()
     return transactions
 
-def get_category_patterns(db):
+def get_category_patterns():
+    db = sqlite3.connect(DB_PATH)
     cursor = db.cursor()
     cursor.execute("""
-        SELECT pattern, category_id
+        SELECT id, pattern
         FROM category_patterns
         """)
     patterns = cursor.fetchall()
     cursor.close()
+    db.close()
     return patterns
 
-def match_categories(transactions, patterns, db):
+def match_categories(transactions, patterns):
+    db = sqlite3.connect(DB_PATH)
     cursor = db.cursor()
     for transaction in transactions:
         for pattern in patterns:
-            match = re.search(str(pattern[0]), str(transaction[1]))
+            match = re.search(str(pattern[1]), str(transaction[1]))
             if match != None:
-                cursor.execute("UPDATE transactions SET category_id=? WHERE id=?",(pattern[1],transaction[0],))
+                cursor.execute("UPDATE transactions SET category_pattern_id=? WHERE id=?",(pattern[0],transaction[0],))
     db.commit()
     cursor.close()
-                
+    db.close()
+
 
 #######################
 
-print("\r\n##### CATEGORIZING TRANSACTIONS #####\r\n")
-
-db = sqlite3.connect(DB_PATH)
-
-transactions = get_transactions(db)
-patterns = get_category_patterns(db)
-match_categories(transactions, patterns, db)
-
-db.close()
-
-print("\r\n##### TRANSACTIONS CATEGORIZED #####\r\n")
+def start_categorization():
+    transactions = get_transactions()
+    patterns = get_category_patterns()
+    match_categories(transactions, patterns)

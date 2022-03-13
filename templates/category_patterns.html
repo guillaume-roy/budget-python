@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<a href="/">Home</a>
+
+<h1>Patterns</h1>
+
+<form method="post" action="/patterns/create">
+  <input type="text" name="pattern" placeholder="pattern">
+  <select name="category">
+    {% for category in categories %}
+    <option value="{{ category[0] }}">{{ category[1] }}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Create">
+</form>
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>Pattern</th>
+    <th></th>
+  </tr>
+  {% for pattern in patterns %}
+  <tr>
+    <td>{{ pattern[3] }}</td>
+    <td>{{ pattern[1] }}</td>
+    <td><a href="/patterns/{{ pattern[0] }}/delete">DELETE</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

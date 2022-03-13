@@ -1,16 +1,29 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<a href="/">Home</a>
+
 <h1>Transactions</h1>
 
-<form method="post">
-  <input type="text" name="label" placeholder="label">
-  <input type="submit" value="Create">
+<form method="post" action="/transactions/import" enctype="multipart/form-data">
+  <input type="file" name="import_file" />
+  <input type="submit" value="Import" />
 </form>
 
-<ul>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Label</th>
+    <th>Amount</th>
+    <th>Category</th>
+  </tr>
   {% for transaction in transactions %}
-  <li>{{ transaction }}</li>
+  <tr>
+    <td>{{ '{0:02d}/{1:02d}/{2}'.format(transaction[3], transaction[2], transaction[1]) }}</td>
+    <td>{{ transaction[6] }}</td>
+    <td>{{ '{0:,.2f} €'.format(transaction[7]).replace(',', ' ') }}</td>
+    <td>{{ transaction[9] }}</td>
+  </tr>
   {% endfor %}
-</ul>
+</table>
 {% endblock %}

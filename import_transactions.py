@@ -24,7 +24,7 @@ def get_transactions(filename):
     for raw_transaction in raw_transactions:
         transaction = get_transaction(raw_transaction)
         transactions.append(transaction)
-    
+
     return transactions
 
 def get_transaction(raw_transaction):
@@ -37,7 +37,7 @@ def get_transaction(raw_transaction):
     year = date.year
     month = date.month
     day = date.day
-    
+
     return [year, month, day, label, float(amount.replace(',','.')), hash]
 
 def insert_transactions(transactions):
@@ -64,19 +64,14 @@ def insert_transactions(transactions):
 def archive_file(filename):
     os.rename(filename, "imports/archived/" + os.path.basename(filename))
 
-
 #######################
 
-print("\r\n##### IMPORTING TRANSACTIONS #####\r\n")
+def start_import():
+    os.makedirs("imports/archived", exist_ok=True)
 
-os.makedirs("imports/archived", exist_ok=True)
+    import_files = get_imports_files()
 
-import_files = get_imports_files()
-
-for import_file in import_files:
-    print("Importing " + import_file)
-    transactions = get_transactions(import_file)
-    insert_transactions(transactions)
-    archive_file(import_file)
-
-print("\r\n##### TRANSACTIONS IMPORTED #####\r\n")
+    for import_file in import_files:
+        transactions = get_transactions(import_file)
+        insert_transactions(transactions)
+        archive_file(import_file)

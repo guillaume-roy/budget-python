@@ -7,37 +7,38 @@ load_dotenv()
 
 DB_PATH = os.getenv("DB_NAME")
 
-def create_category(label):
+def get_categories_patterns():
   db = sqlite3.connect(DB_PATH)
   cursor = db.cursor()
   cursor.execute("""
-    INSERT INTO categories (label)
-    VALUES (?);
-    """, (label,))
-  db.commit()
-  cursor.close()
-  db.close()
-
-def get_categories():
-  db = sqlite3.connect(DB_PATH)
-  cursor = db.cursor()
-  cursor.execute("""
-    SELECT id, label
-    FROM categories
+    SELECT cp.id, cp.pattern, cp.category_id, c.label AS category_label
+    FROM category_patterns cp
+    LEFT OUTER JOIN categories c ON cp.category_id = c.id
     """)
   categories = cursor.fetchall()
   cursor.close()
   db.close()
   return categories
 
-def delete_category(category_id):
+def create_pattern(pattern, category):
+  db = sqlite3.connect(DB_PATH)
+  cursor = db.cursor()
+  cursor.execute("""
+    INSERT INTO category_patterns (pattern, category_id)
+    VALUES (?, ?);
+    """, (pattern,category,))
+  db.commit()
+  cursor.close()
+  db.close()
+
+def delete_pattern(pattern_id):
   db = sqlite3.connect(DB_PATH)
   cursor = db.cursor()
   cursor.execute("PRAGMA foreign_keys = ON;")
   cursor.execute("""
-    DELETE FROM categories
+    DELETE FROM category_patterns
     WHERE id = ?;
-    """, (category_id,))
+    """, (pattern_id,))
   db.commit()
   cursor.close()
   db.close()

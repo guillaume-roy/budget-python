@@ -1,16 +1,26 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<a href="/">Home</a>
+
 <h1>Categories</h1>
 
-<form method="post">
+<form method="post" action="/categories/create">
   <input type="text" name="label" placeholder="label">
   <input type="submit" value="Create">
 </form>
 
-<ul>
+<table>
+  <tr>
+    <th>Label</th>
+    <th></th>
+  </tr>
   {% for category in categories %}
-  <li>{{ category[0] }} - {{ category[1] }}</li>
+  <tr>
+    <td>{{ category[1] }}</td>
+    <td><a href="/categories/{{ category[0] }}/delete">DELETE</a></td>
+  </tr>
   {% endfor %}
-</ul>
+</table>
+
 {% endblock %}
