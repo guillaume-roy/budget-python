@@ -3,30 +3,32 @@
 {% block body %}
 <a href="/">Home</a>
 
-<h1>Patterns</h1>
+<h1>Budget categories</h1>
 
-<form method="post" action="/patterns/create">
+<form method="post" action="/budget-categories/create">
   <select name="category">
     {% for category in categories %}
     <option value="{{ category.id }}">{{ category.label }}</option>
     {% endfor %}
   </select>
-  <input type="text" name="pattern" placeholder="pattern">
+  <input type="number" name="budget" placeholder="budget">
+  <input type="number" name="month" placeholder="month">
+  <input type="number" name="year" placeholder="year">
   <input type="submit" value="Create">
 </form>
 
 <table>
   <tr>
     <th>Category</th>
-    <th>Pattern</th>
+    <th>Budget</th>
     <th></th>
   </tr>
-  {% for pattern in patterns %}
+  <!-- {% for pattern in patterns %}
   <tr>
     <td>{{ pattern.category_label }}</td>
     <td>{{ pattern.pattern }}</td>
     <td><a href="/patterns/{{ pattern.id }}/delete">DELETE</a></td>
   </tr>
-  {% endfor %}
+  {% endfor %} -->
 </table>
 {% endblock %}

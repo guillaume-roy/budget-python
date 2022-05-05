@@ -3,17 +3,20 @@
 {% block body %}
 <a href="/">Home</a>
 
-<h1>Budget {{ month }}/{{ year }}</h1>
+<h1><a href="/budget/{{ previous_url }}">◀️</a> Budget {{ current_date }} <a href="/budget/{{ next_url }}">▶️</a>
+</h1>
 
 <table>
   <tr>
     <th>Category</th>
-    <th>Label</th>
+    <th>Amount</th>
+    <th>Budget</th>
   </tr>
   {% for b in budget %}
   <tr>
     <td>{{ b.category_label }}</td>
-    <td>{{ '{0:,.2f} €'.format(b.total).replace(',', ' ') }}</td>
+    <td>{{ '{0:,.2f} €'.format(b.amount).replace(',', ' ') }}</td>
+    <td></td>
   </tr>
   {% endfor %}
 </table>

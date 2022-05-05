@@ -1,4 +1,4 @@
-from calendar import month
+from calendar import month, monthrange
 import datetime
 from flask import Flask, render_template, request, redirect
 from werkzeug.utils import secure_filename
@@ -8,6 +8,7 @@ import patterns
 import categorize_transactions
 import import_transactions
 import budget
+import budget_categories
 
 app = Flask(__name__)
 
@@ -16,8 +17,12 @@ def index_route():
     currentDateTime = datetime.datetime.now()
     date = currentDateTime.date()
     year = date.strftime("%Y")
-    month = date.strftime("%m").strip('0')
+    month = date.strftime("%m")
     return render_template('index.html', year=year, month=month)
+
+#
+# CATEGORIES
+#
 
 @app.route("/categories")
 def categories_route():
@@ -35,6 +40,34 @@ def delete_category_route(category_id):
     categories.delete_category(category_id)
     categorize_transactions.start_categorization()
     return redirect("/categories")
+
+#
+# CATEGORY PATTERNS
+#
+
+@app.route("/patterns")
+def patterns_route():
+  patterns_data = patterns.get_categories_patterns()
+  categories_data = categories.get_categories()
+  return render_template('category_patterns.html', patterns=patterns_data, categories=categories_data)
+
+@app.route("/patterns/create", methods=['POST'])
+def create_pattern_route():
+	pattern = request.form['pattern']
+	category = request.form['category']
+	patterns.create_pattern(pattern, category)
+	categorize_transactions.start_categorization()
+	return redirect("/patterns")
+
+@app.route("/patterns/<pattern_id>/delete")
+def delete_pattern_route(pattern_id):
+    patterns.delete_pattern(pattern_id)
+    categorize_transactions.start_categorization()
+    return redirect("/patterns")
+
+#
+# TRANSACTIONS
+#
 
 @app.route("/transactions")
 def transactions_route():
@@ -67,28 +100,39 @@ def import_transaction_route():
     categorize_transactions.start_categorization()
     return redirect("/transactions")
 
-@app.route("/patterns")
-def patterns_route():
-  patterns_data = patterns.get_categories_patterns()
-  categories_data = categories.get_categories()
-  return render_template('category_patterns.html', patterns=patterns_data, categories=categories_data)
-
-@app.route("/patterns/create", methods=['POST'])
-def create_pattern_route():
-	pattern = request.form['pattern']
-	category = request.form['category']
-	patterns.create_pattern(pattern, category)
-	categorize_transactions.start_categorization()
-	return redirect("/patterns")
-
-@app.route("/patterns/<pattern_id>/delete")
-def delete_pattern_route(pattern_id):
-    patterns.delete_pattern(pattern_id)
-    categorize_transactions.start_categorization()
-    return redirect("/patterns")
+#
+# BUDGET
+#
 
 @app.route("/budget/<year>/<month>")
 def budget_year_month_route(year, month):
-  month_budget = budget.get_by_month(year, month)
-  print(month_budget)
-  return render_template('month_year_budget.html', budget=month_budget, year=year, month=month)
+    current_month_date = datetime.datetime(int(year), int(month), 1)
+    previous_month_date = current_month_date - datetime.timedelta(days=1)
+    next_month_date= current_month_date + datetime.timedelta(days=monthrange(int(year), int(month))[1])
+
+    month_budget = budget.get_expense_for_month(year, month)
+
+    return render_template('month_year_budget.html', budget=month_budget, current_date=current_month_date.strftime("%B %Y"), previous_url=previous_month_date.strftime("%Y/%m"), next_url=next_month_date.strftime("%Y/%m"))
+
+#
+# BUDGET CATEGORIES
+#
+
+@app.route("/budget-categories")
+def budget_categories_route():
+  categories_data = categories.get_categories()
+  return render_template('budget_categories.html', categories=categories_data)
+
+@app.route("/budget-categories/create", methods=['POST'])
+def create_budget_categorie_route():
+	category = request.form['category']
+	budget = request.form['budget']
+	month = request.form['month']
+	year = request.form['year']
+	budget_categories.create_budget_categories(category, budget, year, month)
+	return redirect("/budget-categories")
+
+@app.route("/budget-categories/<budget_categories_id>/delete")
+def delete_budget_categorie_route(budget_categories_id):
+    budget_categories.delete_budget_categories(budget_categories_id)
+    return redirect("/budget-categories")
