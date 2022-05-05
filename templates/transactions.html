@@ -5,6 +5,10 @@
 
 <h1>Transactions</h1>
 
+
+<div><a href="/transactions/categorize">Categorize</a></div>
+<div><a href="/transactions/none">None</a></div>
+
 <form method="post" action="/transactions/import" enctype="multipart/form-data">
   <input type="file" name="import_file" />
   <input type="submit" value="Import" />
@@ -16,14 +20,28 @@
     <th>Label</th>
     <th>Amount</th>
     <th>Category</th>
+    <th></th>
   </tr>
   {% for transaction in transactions %}
-  <tr>
-    <td>{{ '{0:02d}/{1:02d}/{2}'.format(transaction[3], transaction[2], transaction[1]) }}</td>
-    <td>{{ transaction[6] }}</td>
-    <td>{{ '{0:,.2f} €'.format(transaction[7]).replace(',', ' ') }}</td>
-    <td>{{ transaction[9] }}</td>
-  </tr>
+  <form method="post" action="/transactions/categorize/{{ transaction.id }}">
+    <tr>
+      <td>{{ '{0:02d}/{1:02d}/{2}'.format(transaction.day, transaction.month, transaction.year) }}</td>
+      <td>{{ transaction.label }}</td>
+      <td>{{ '{0:,.2f} €'.format(transaction.amount).replace(',', ' ') }}</td>
+      <td>
+        <select name="category">
+          <option value="none"></option>
+          {% for category in categories %}
+          <option value="{{ category.id }}" {% if transaction.category_id==category.id %} selected {% endif %}>{{
+            category.label
+            }}
+          </option>
+          {% endfor %}
+        </select>
+      </td>
+      <td><input type="submit" value="Save" /></td>
+    </tr>
+  </form>
   {% endfor %}
 </table>
 {% endblock %}

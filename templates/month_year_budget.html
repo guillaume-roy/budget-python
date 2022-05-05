@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<a href="/">Home</a>
+
+<h1>Budget {{ month }}/{{ year }}</h1>
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>Label</th>
+  </tr>
+  {% for b in budget %}
+  <tr>
+    <td>{{ b.category_label }}</td>
+    <td>{{ '{0:,.2f} €'.format(b.total).replace(',', ' ') }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

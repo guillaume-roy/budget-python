@@ -2,34 +2,25 @@ import re
 import sqlite3
 import os
 from dotenv import load_dotenv
+from db_utils import select, execute;
 
 load_dotenv()
 
 DB_PATH = os.getenv("DB_NAME")
 
 def get_categories_patterns():
-  db = sqlite3.connect(DB_PATH)
-  cursor = db.cursor()
-  cursor.execute("""
-    SELECT cp.id, cp.pattern, cp.category_id, c.label AS category_label
-    FROM category_patterns cp
-    LEFT OUTER JOIN categories c ON cp.category_id = c.id
-    """)
-  categories = cursor.fetchall()
-  cursor.close()
-  db.close()
-  return categories
+    return select("""
+        SELECT cp.id, cp.pattern, cp.category_id, c.label AS category_label
+        FROM category_patterns cp
+        LEFT OUTER JOIN categories c ON cp.category_id = c.id
+        ORDER BY c.label, cp.pattern
+        """)
 
 def create_pattern(pattern, category):
-  db = sqlite3.connect(DB_PATH)
-  cursor = db.cursor()
-  cursor.execute("""
-    INSERT INTO category_patterns (pattern, category_id)
-    VALUES (?, ?);
-    """, (pattern,category,))
-  db.commit()
-  cursor.close()
-  db.close()
+    execute("""
+        INSERT INTO category_patterns (pattern, category_id)
+        VALUES (?, ?);
+        """, (pattern,category,))
 
 def delete_pattern(pattern_id):
   db = sqlite3.connect(DB_PATH)

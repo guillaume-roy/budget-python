@@ -40,6 +40,7 @@ CREATE TABLE transactions (
 	month INTEGER NOT NULL,
 	day INTEGER NOT NULL,
 	category_pattern_id INTEGER NULL,
+    category_id INTEGER NULL,
 	simulation_id INTEGER NULL,
 	label TEXT NOT NULL,
 	amount REAL DEFAULT 0,
@@ -53,7 +54,12 @@ CREATE TABLE transactions (
     CONSTRAINT FK_TRANSACTIONS_SIMULATION_ID
     FOREIGN KEY (simulation_id)
     REFERENCES simulations (id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+
+    CONSTRAINT FK_TRANSACTIONS_CATEGORY_ID
+    FOREIGN KEY (category_id)
+    REFERENCES categories(id)
+    ON DELETE SET NULL
 );
 
 CREATE INDEX transactions_year_IDX ON transactions ("year");

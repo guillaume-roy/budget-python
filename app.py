@@ -1,3 +1,5 @@
+from calendar import month
+import datetime
 from flask import Flask, render_template, request, redirect
 from werkzeug.utils import secure_filename
 import categories
@@ -5,12 +7,17 @@ import transactions
 import patterns
 import categorize_transactions
 import import_transactions
+import budget
 
 app = Flask(__name__)
 
 @app.route("/")
 def index_route():
-  return render_template('index.html')
+    currentDateTime = datetime.datetime.now()
+    date = currentDateTime.date()
+    year = date.strftime("%Y")
+    month = date.strftime("%m").strip('0')
+    return render_template('index.html', year=year, month=month)
 
 @app.route("/categories")
 def categories_route():
@@ -32,7 +39,25 @@ def delete_category_route(category_id):
 @app.route("/transactions")
 def transactions_route():
   transactions_data = transactions.get_transactions()
-  return render_template('transactions.html', transactions=transactions_data)
+  categories_data = categories.get_categories()
+  return render_template('transactions.html', transactions=transactions_data, categories=categories_data)
+
+@app.route("/transactions/none")
+def transactions_none_route():
+  transactions_data = transactions.get_transactions_none()
+  categories_data = categories.get_categories()
+  return render_template('transactions.html', transactions=transactions_data, categories=categories_data)
+
+@app.route("/transactions/categorize")
+def transactions_categorize_route():
+    categorize_transactions.start_categorization()
+    return redirect("/transactions")
+
+@app.route("/transactions/categorize/<transaction_id>", methods=['POST'])
+def transactions_categorize_transaction_id_route(transaction_id):
+    category = request.form['category']
+    transactions.assign_category(transaction_id, category)
+    return redirect("/transactions")
 
 @app.route('/transactions/import', methods=['POST'])
 def import_transaction_route():
@@ -61,3 +86,9 @@ def delete_pattern_route(pattern_id):
     patterns.delete_pattern(pattern_id)
     categorize_transactions.start_categorization()
     return redirect("/patterns")
+
+@app.route("/budget/<year>/<month>")
+def budget_year_month_route(year, month):
+  month_budget = budget.get_by_month(year, month)
+  print(month_budget)
+  return render_template('month_year_budget.html', budget=month_budget, year=year, month=month)

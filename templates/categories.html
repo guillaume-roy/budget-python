@@ -17,8 +17,8 @@
   </tr>
   {% for category in categories %}
   <tr>
-    <td>{{ category[1] }}</td>
-    <td><a href="/categories/{{ category[0] }}/delete">DELETE</a></td>
+    <td>{{ category.label }}</td>
+    <td><a href="/categories/{{ category.id }}/delete">DELETE</a></td>
   </tr>
   {% endfor %}
 </table>

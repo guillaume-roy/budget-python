@@ -9,7 +9,7 @@
   <input type="text" name="pattern" placeholder="pattern">
   <select name="category">
     {% for category in categories %}
-    <option value="{{ category[0] }}">{{ category[1] }}</option>
+    <option value="{{ category.id }}">{{ category.label }}</option>
     {% endfor %}
   </select>
   <input type="submit" value="Create">
@@ -23,9 +23,9 @@
   </tr>
   {% for pattern in patterns %}
   <tr>
-    <td>{{ pattern[3] }}</td>
-    <td>{{ pattern[1] }}</td>
-    <td><a href="/patterns/{{ pattern[0] }}/delete">DELETE</a></td>
+    <td>{{ pattern.category_label }}</td>
+    <td>{{ pattern.pattern }}</td>
+    <td><a href="/patterns/{{ pattern.id }}/delete">DELETE</a></td>
   </tr>
   {% endfor %}
 </table>
