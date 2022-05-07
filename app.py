@@ -110,7 +110,7 @@ def budget_year_month_route(year, month):
     previous_month_date = current_month_date - datetime.timedelta(days=1)
     next_month_date= current_month_date + datetime.timedelta(days=monthrange(int(year), int(month))[1])
 
-    month_budget = budget.get_expense_for_month(year, month)
+    month_budget = budget.get_expense_for_month(month, year)
 
     return render_template('month_year_budget.html', budget=month_budget, current_date=current_month_date.strftime("%B %Y"), previous_url=previous_month_date.strftime("%Y/%m"), next_url=next_month_date.strftime("%Y/%m"))
 
@@ -129,7 +129,7 @@ def create_budget_categorie_route():
 	budget = request.form['budget']
 	month = request.form['month']
 	year = request.form['year']
-	budget_categories.create_budget_categories(category, budget, year, month)
+	budget_categories.create_budget_categories(category, budget, month, year)
 	return redirect("/budget-categories")
 
 @app.route("/budget-categories/<budget_categories_id>/delete")

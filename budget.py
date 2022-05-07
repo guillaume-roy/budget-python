@@ -1,6 +1,6 @@
 from db_utils import select
 
-def get_expense_for_month(year, month):
+def get_expense_for_month(month, year):
     return select("""
         select COALESCE(c2.label, c.label) as category_label, SUM(t.amount) as amount
         from transactions t
@@ -12,7 +12,7 @@ def get_expense_for_month(year, month):
         ORDER BY category_label
         """, (int(month), int(year),))
 
-def get_budget_for_month(year, month):
+def get_budget_for_month(month, year):
     return select("""
         select COALESCE(c2.label, c.label) as category_label, SUM(t.amount) as amount
         from transactions t

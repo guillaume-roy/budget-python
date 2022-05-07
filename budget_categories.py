@@ -16,7 +16,7 @@ def get_budget_categories():
         ORDER BY c.label, cp.pattern
         """)
 
-def create_budget_categories(category, budget, year, month):
+def create_budget_categories(category, budget, month, year):
     # TODO
     execute("""
         DELETE FROM budget_categories
